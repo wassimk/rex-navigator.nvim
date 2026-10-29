@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Check staged Lua files for stylua formatting
+lua_files=$(git diff --cached --name-only --diff-filter=ACM -- '*.lua')
+
+if [ -n "$lua_files" ]; then
+  if ! command -v stylua &>/dev/null; then
+    echo "WARNING: stylua is not installed — skipping formatting check."
+    echo "Install stylua to enforce Lua formatting: brew install stylua"
+  elif ! stylua --check $lua_files; then
+    echo ""
+    echo "ERROR: stylua formatting violations in staged files."
+    echo "Run 'stylua .' to fix, then re-stage and commit."
+    exit 1
+  fi
+fi
